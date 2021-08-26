@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Courses</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="card-title">دانشجویان {{ course_info.0.course.lesson.name }}</h1>
+        {% for course in course_info %}
+            <div class="card">
+                      <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                <p class="card-text text-right">  {{ course.student.study_field }} : رشته  </p>
+                                <p class="card-text text-right">{{ course.student.first_name }} {{ course.student.last_name }}</p>
+                                </div>
+                      </div>
+            </div>
+        {% endfor %}
+</div>
+</body>
+</html>
