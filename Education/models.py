@@ -1,6 +1,7 @@
 import django.utils.timezone
 from django.contrib.auth.models import User
 from django.db import models
+from .vars import *
 
 
 # Create your models here.
@@ -13,17 +14,18 @@ class College(models.Model):
 
 
 class Person(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    first_name = models.CharField(max_length=200)
-    last_name = models.CharField(max_length=200)
-    birthday = models.DateField()
-    address = models.TextField()
-    personal_id = models.PositiveIntegerField(unique=True, blank=True, null=True)
-    email = models.EmailField()
-    phone = models.CharField(blank=True, null=True, max_length=200)
-    image = models.ImageField(upload_to='users_images', blank=True, null=True)
-    entry_date = models.DateField(null=True, blank=True, default=django.utils.timezone.now)
-    study_field = models.CharField(max_length=300)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name=USERNAME)
+    first_name = models.CharField(max_length=200, verbose_name=FIRST_NAME)
+    last_name = models.CharField(max_length=200, verbose_name=LAST_NAME)
+    birthday = models.DateField(verbose_name=BIRTHDAY)
+    address = models.TextField(verbose_name=ADDRESS)
+    personal_id = models.CharField(max_length=200, unique=True, blank=True, null=True, verbose_name=PERSONAL_ID)
+    email = models.EmailField(verbose_name=EMAIL)
+    phone = models.CharField(blank=True, null=True, max_length=200, verbose_name=PHONE)
+    image = models.ImageField(upload_to='users_images', blank=True, null=True, verbose_name=PHOTO)
+    entry_date = models.DateField(null=True, blank=True, default=django.utils.timezone.now, verbose_name=ENTRY_DATE)
+    study_field = models.CharField(max_length=300, verbose_name=STUDY_FIELD)
+    register_date = models.DateField(null=True, blank=True, default=django.utils.timezone.now, verbose_name=REGISTER_DATE)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -37,10 +39,21 @@ class Teacher(Person):
         return f"Teacher: {self.first_name} {self.last_name} -- {self.study_field}"
 
 
-class Student(Person):
+class Staff(Person):
+    post = models.CharField(default=None, unique=True, max_length=200, blank=True, null=True)
 
     def __str__(self):
-        return f"Student: {self.first_name} {self.last_name} -- {self.study_field}"
+        return f"Staff: {self.first_name} {self.last_name} -- {self.post}"
+
+
+class Student(Person):
+    registration_confirmation = models.BooleanField(default=False, verbose_name=REGISTER_CONFIRM)
+
+    class Meta:
+        permissions = [('can_write_blog', 'Can Write Blog')]
+
+    def __str__(self):
+        return f"Student: {self.first_name} {self.last_name} -- {self.study_field} -- {self.registration_confirmation}"
 
 
 class Lesson(models.Model):

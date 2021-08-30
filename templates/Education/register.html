@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Register Student</title>
-</head>
-<body>
-    <form action="{% url 'Education:register' %}" method="post" enctype="multipart/form-data">
+{% extends 'Education/base.html' %}
+{% block title %}درخواست ثبت نام{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="text-center">
+        <h2>درخواست ثبت نام دانشجو</h2>
+    </div>
+    <div class="text-right">
+        <form action="{% url 'Education:register' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ user.as_p }}
-            {{ form.as_p }}
-            <input type="submit" value="Register">
-    </form>
+            {{ user|crispy }}
+            {{ form|crispy }}
+            <input type="submit" value="ثبت درخواست">
+        </form>
+    </div>
 
-</body>
-</html>
+{% endblock %}

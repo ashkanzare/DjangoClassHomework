@@ -1,17 +1,36 @@
 import django.contrib.auth
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views import generic
 from .models import Course, StudentCourse, Student
 from .forms import RegisterStudent, StudentCourseForm, EditProfileStudent, UserLogin, RegisterUser
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import Group
+from django.contrib import messages
+from .vars import *
+from django.contrib.auth.views import LogoutView
+
 
 # Create your views here.
+
 
 class CourseListView(generic.ListView):
     template_name = 'Education/courses.html'
     queryset = Course.objects.all()
+
+
+class HomeView(generic.TemplateView):
+    template_name = 'Education/home.html'
+
+
+class EducateInfoView(generic.TemplateView):
+    template_name = 'Education/info.html'
+
+
+class StudentRequestsView(generic.ListView):
+    template_name = 'Education/stds_requests.html'
+    queryset = Student.objects.filter(registration_confirmation=False)
 
 
 def detail(request, course_id):
@@ -32,12 +51,17 @@ def register(request):
             if created:
                 user.set_password(user_form.cleaned_data['password'])
                 user.save()
+                std_group = Group.objects.get(name='Students')
+                std_group.user_set.add(user)
                 new_std = form.save(commit=False)
                 new_std.user = user
                 new_std.save()
-                return HttpResponse("Your Registration submitted successfully")
-            return HttpResponse("Username has already taken")
-        return HttpResponse("Please fill forms with valid inputs")
+                messages.success(request, REGISTER_SUCCESS)
+                return render(request, 'Education/home.html')
+        messages.error(request, form.errors.as_text())
+        messages.error(request, user_form.errors.as_text())
+        return redirect('Education:register')
+
     context = {
         'form': form,
         'user': user_form
@@ -73,6 +97,10 @@ def edit(request, std_id):
             std.address = form.data['address']
             std.email = form.data['email']
             std.image = form.data['image']
+            std.personal_id = form.data['personal_id']
+            std.registration_confirmation = form.data['registration_confirmation']
+            std.study_field = form.data['study_field']
+
             std.save()
             return HttpResponse("Profile edited successfully")
 
@@ -82,17 +110,21 @@ def edit(request, std_id):
     return render(request, 'Education/edit.html', context=context)
 
 
-def student_login(request):
+def user_login(request):
     form = UserLogin()
     if request.method == 'POST':
         form = UserLogin(request.POST)
         if form.is_valid():
-            print()
-            if authenticate(username=form.data['username'], password=form.data['password']):
-                return HttpResponse('you are logged in')
-            else:
-                return HttpResponse('wrong username or password')
+            user = authenticate(username=form.data['username'], password=form.data['password'])
+            if user:
+                login(request, user)
+                return redirect('Education:home')
+            messages.error(request, INVALID_USERNAME_PASSWORD)
+            return redirect('Education:login')
+        messages.error(request, form.errors.as_text())
+        return redirect('Education:login')
     context = {
         'form': form,
     }
     return render(request, 'Education/login.html', context=context)
+

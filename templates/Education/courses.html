@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Courses</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
+{% extends 'Education/base.html' %}
+{% block title %}کلاس ها{% endblock %}
+{% block content %}
 <div class="container mt-5">
-        <h1>کلاس ها</h1>
+        <div class="text-right"><h1>کلاس ها</h1></div>
         {% for course in object_list %}
             <div class="card">
                 <a href="{% url 'Education:detail' course.id %}">
@@ -21,5 +16,4 @@
             </div>
         {% endfor %}
 </div>
-</body>
-</html>
+{% endblock %}
