@@ -5,10 +5,12 @@
     <title>Register Student</title>
 </head>
 <body>
-<form action="{% url 'Education:register' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Register">
+    <form action="{% url 'Education:register' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ user.as_p }}
+            {{ form.as_p }}
+            <input type="submit" value="Register">
     </form>
+
 </body>
 </html>

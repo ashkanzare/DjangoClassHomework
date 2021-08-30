@@ -1,3 +1,5 @@
+import django.utils.timezone
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -11,6 +13,7 @@ class College(models.Model):
 
 
 class Person(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     birthday = models.DateField()
@@ -19,7 +22,7 @@ class Person(models.Model):
     email = models.EmailField()
     phone = models.CharField(blank=True, null=True, max_length=200)
     image = models.ImageField(upload_to='users_images', blank=True, null=True)
-    entry_date = models.DateField()
+    entry_date = models.DateField(null=True, blank=True, default=django.utils.timezone.now)
     study_field = models.CharField(max_length=300)
 
     def __str__(self):
