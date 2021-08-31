@@ -10,7 +10,7 @@ from .vars import *
 class RegisterStudent(forms.ModelForm):
     class Meta:
         model = Student
-        exclude = ['user', 'registration_confirmation']
+        exclude = ['user', 'registration_confirmation', 'register_date', 'max_units']
 
         help_texts = {
             'phone': PHONE_HELP_TEXT,

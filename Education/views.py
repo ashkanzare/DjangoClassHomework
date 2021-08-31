@@ -1,4 +1,5 @@
 import django.contrib.auth
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
@@ -10,6 +11,19 @@ from django.contrib.auth.models import Group
 from django.contrib import messages
 from .vars import *
 from django.contrib.auth.views import LogoutView
+
+
+# user test functions
+def check_user_registered(user):
+    check_user = User.objects.filter(id=user.id)
+    if check_user:
+        std = Student.objects.get(user=user)
+        return not std.registration_confirmation
+    return True
+
+
+def check_user_is_boss(user):
+    return user.groups.filter(name='Boss').exists()
 
 
 # Create your views here.
@@ -33,6 +47,11 @@ class StudentRequestsView(generic.ListView):
     queryset = Student.objects.filter(registration_confirmation=False)
 
 
+class AllStudentsView(generic.ListView):
+    template_name = 'Education/students.html'
+    queryset = Student.objects.all()
+
+
 def detail(request, course_id):
     if request.method == 'GET':
         context = dict()
@@ -40,6 +59,7 @@ def detail(request, course_id):
         return render(request, 'Education/course-detail.html', context=context)
 
 
+@user_passes_test(check_user_registered)
 def register(request):
     form = RegisterStudent()
     user_form = RegisterUser()
@@ -69,45 +89,64 @@ def register(request):
     return render(request, 'Education/register.html', context=context)
 
 
+#
+# def register_course(request):
+#     form = StudentCourseForm()
+#     if request.method == 'POST':
+#         form = StudentCourseForm(request.POST, request.FILES)
+#         if StudentCourse.objects.filter(student__id=form['student'].value()):
+#             return HttpResponse("This student is already have this course.")
+#         elif form.is_valid():
+#             form.save()
+#             return HttpResponse("Course successfully submitted for student.")
+#
+#     context = {
+#         'form': form,
+#     }
+#     return render(request, 'Education/std_course.html', context=context)
+
+
 def register_course(request):
-    form = StudentCourseForm()
-    if request.method == 'POST':
-        form = StudentCourseForm(request.POST, request.FILES)
-        if StudentCourse.objects.filter(student__id=form['student'].value()):
-            return HttpResponse("This student is already have this course.")
-        elif form.is_valid():
-            form.save()
-            return HttpResponse("Course successfully submitted for student.")
-
+    std = Student.objects.get(user=request.user)
+    courses = Course.objects.filter(college=std.study_field.college)
     context = {
-        'form': form,
+        'courses': courses,
+        'std': std
     }
-    return render(request, 'Education/std_course.html', context=context)
+    return render(request, 'Education/register-course.html', context=context)
 
 
+@user_passes_test(check_user_is_boss)
 def edit(request, std_id):
     std = get_object_or_404(Student, id=std_id)
     form = EditProfileStudent(instance=std)
     if request.method == 'POST':
-        form = EditProfileStudent(request.POST, request.FILES)
+        form = EditProfileStudent(request.POST, request.FILES, instance=std)
         if form.is_valid():
-            std.first_name = form.data['first_name']
-            std.last_name = form.data['last_name']
-            std.birthday = form.data['birthday']
-            std.address = form.data['address']
-            std.email = form.data['email']
-            std.image = form.data['image']
-            std.personal_id = form.data['personal_id']
-            std.registration_confirmation = form.data['registration_confirmation']
-            std.study_field = form.data['study_field']
-
-            std.save()
-            return HttpResponse("Profile edited successfully")
+            form.save()
+            return redirect('Education:all_students')
 
     context = {
         'form': form,
+        'std_id': std.id
     }
     return render(request, 'Education/edit.html', context=context)
+
+
+def confirm_std(request, std_id):
+    std = get_object_or_404(Student, id=std_id)
+    form = EditProfileStudent(instance=std)
+    if request.method == 'POST':
+        form = EditProfileStudent(request.POST, request.FILES, instance=std)
+        if form.is_valid():
+            form.save()
+            return redirect('Education:std_requests')
+
+    context = {
+        'form': form,
+        'std_id': std.id
+    }
+    return render(request, 'Education/confirm.html', context=context)
 
 
 def user_login(request):
@@ -127,4 +166,3 @@ def user_login(request):
         'form': form,
     }
     return render(request, 'Education/login.html', context=context)
-

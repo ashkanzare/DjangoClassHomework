@@ -16,6 +16,7 @@ USERNAME_HELP_TEXT = 'حداکثر ۱۵۰ حرف و میتواند شامل حر
 PHONE_HELP_TEXT = 'شماره تلفن خود را بدون صفر وارد کنید. مانند : ۹۱۲۱۲۳۴۵۶۷'
 REGISTER_DATE = 'تاریخ ثبت نام'
 REGISTER_CONFIRM = 'تایید ثبت نام'
+MAX_UNITS = 'حداکثر تعداد واحد'
 
 """ Errors """
 INVALID_USERNAME = 'نام کاربری در سیستم موجود است'
@@ -26,3 +27,12 @@ INVALID_USERNAME_PASSWORD = 'نام کاربری یا رمز عبور اشتبا
 
 """ Register Confirmation """
 REGISTER_SUCCESS = 'ثبت نام شما با موفقیت انجام شد'
+
+
+""" DAYS NAME """
+SATURDAY = 'شنبه', 'saturday'
+SUNDAY = 'یک شنبه', 'sunday'
+MONDAY = 'دو شنبه', 'monday'
+THURSDAY = 'سه شنبه', 'thursday'
+WEDNESDAY = 'چهارشنبه', 'wednesday'
+TUESDAY = 'پنج شنبه', 'tuesday'

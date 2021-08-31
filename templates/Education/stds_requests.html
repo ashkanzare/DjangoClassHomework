@@ -3,17 +3,23 @@
 {% load education_extras %}
 {% block content %}
 <div class="container mt-5">
-        <div class="text-right"><h1>کلاس ها</h1></div>
-        {% for request in object_list %}
-            <div class="card text-right">
-                <a href="{% url 'Education:edit' request.id %}">
-                      <div class="card-body">
-                          <div class="card-title">
-                            <h5 class="float-right">{{ request.first_name }} {{ request.last_name }} -- تاریخ: {{ request.register_date|convert_date }}</h5>
+        <div class="text-right"><h1>درخواست ها</h1></div>
+        {% if object_list %}
+            {% for request in object_list %}
+                <div class="card text-right">
+                    <a href="{% url 'Education:confirm_std' request.id %}">
+                          <div class="card-body">
+                              <div class="card-title">
+                                <h5 class="float-right">{{ request.first_name }} {{ request.last_name }} -- تاریخ: {{ request.register_date|convert_date }} -- تایید نشده</h5>
+                              </div>
                           </div>
-                      </div>
-                </a>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center opacity-50 mt-5">
+                <h4 class="text-secondary"><i>بدون درخواست</i></h4>
             </div>
-        {% endfor %}
+        {% endif %}
 </div>
 {% endblock %}

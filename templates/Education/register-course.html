@@ -1,0 +1,85 @@
+{% extends 'Education/base.html' %}
+{% block title %}ثبت نام ترم جدید{% endblock %}
+{% load education_extras %}
+{% block content %}
+    {% if std.registration_confirmation %}
+    <div class="container">
+        <div class="row">
+            <div id="suggest" class="col-md-8 text-right" style="height: 40vh!important; overflow: auto; direction: ltr">
+                <h3>دروس پیشنهادی</h3>
+                <div class="card w-100 row" style="width: 70rem!important;">
+                            <div class="card-body col-12">
+                                <div class="row">
+                                    <p class="card-text text-right col-2">  نام درس </p>
+                                    <p class="card-text text-right col-2">استاد</p>
+                                    <p class="card-text text-right col-2">واحد</p>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <p class="card-text col-6 text-right">روز های هفته </p>
+                                            <p class="card-text col-3 text-right">ساعت شروع</p>
+                                            <p class="card-text col-3 text-right">ساعت پایان</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% for course in courses %}
+                        <div id="{{ course.id }}" class="card w-100 row course-select" style="width: 70rem!important;" onclick="select('{{ course.id }}', true)">
+                            <div class="card-body col-12">
+                                <div class="row">
+                                    <p class="card-text text-right col-2">  {{ course.lesson.name }} </p>
+                                    <p class="card-text text-right col-2">{{ course.teacher.last_name }}</p>
+                                    <p class="card-text text-right col-2">{{ course.lesson.unit }}</p>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <p class="card-text col-6 text-right">{{ course.session_1 }}  تا {{ course.session_2 }} </p>
+                                            <p class="card-text col-3 text-right" style="direction: ltr!important; font-size: 70%">{{ course.session_start_time }}</p>
+                                            <p class="card-text col-3 text-right" style="direction: ltr!important; font-size: 70%">{{ course.session_end_time }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+
+            </div>
+            <div class="col-md-4 text-right">
+                <h3>جستجو در درس ها</h3>
+
+            </div>
+        </div>
+        <div class="row">
+            <div id='choice' class="col-md-8 text-right" style="height: 40vh!important; overflow: auto; direction: ltr">
+                <h3>دروس انتخابی</h3>
+                <div class="card w-100 row" style="width: 70rem!important;">
+                            <div class="card-body col-12">
+                                <div class="row">
+                                    <p class="card-text text-right col-2">  نام درس </p>
+                                    <p class="card-text text-right col-2">استاد</p>
+                                    <p class="card-text text-right col-2">واحد</p>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <p class="card-text col-6 text-right">روز های هفته </p>
+                                            <p class="card-text col-3 text-right">ساعت شروع</p>
+                                            <p class="card-text col-3 text-right">ساعت پایان</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center">
+             <a href="" class="btn btn-primary ml-2">دیدن برنامه هفتگی</a>
+             <a href="" class="btn btn-success">ثبت دروس</a>
+        </div>
+    </div>
+    {% else %}
+        <div class="container text-center">
+            <h2 class="text-secondary">
+                شما به علت عدم تایید ثبت نام از سمت آموزش مجاز به انتخاب واحد نیستید
+            </h2>
+        </div>
+    {% endif %}
+{% endblock %}

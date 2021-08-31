@@ -42,3 +42,9 @@ def convert_date(date):
     j_date = jdatetime.date.fromgregorian(day=date.day, month=date.month, year=date.year)
     month = j_date.j_months_fa[j_date.month - 1]
     return f"{en_to_fa(j_date.day)} {month} {en_to_fa(j_date.year)}"
+
+
+@register.filter(name='std_status')
+def std_status(boolean):
+    return 'تایید شده' if boolean else 'تایید نشده'
+
