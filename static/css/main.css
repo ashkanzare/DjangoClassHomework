@@ -13,6 +13,10 @@ nav a {
     text-decoration: none!important;
 }
 
+a {
+    text-decoration: none!important;
+}
+
 nav a:hover {
     color: rgba(255, 255, 255, 0.73) !important;
 }
@@ -30,3 +34,7 @@ nav a:hover {
 
 }
 
+.delete-book:hover {
+    cursor: pointer!important;
+    color: #720606!important;
+}

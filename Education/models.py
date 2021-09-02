@@ -2,6 +2,8 @@ import django.utils.timezone
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
+from django.utils.datetime_safe import datetime
+
 from .vars import *
 
 
@@ -113,11 +115,26 @@ class Course(models.Model):
     )
     session_1 = models.CharField(max_length=100, choices=days, null=True, blank=True)
     session_2 = models.CharField(max_length=100, choices=days, null=True, blank=True)
+
     session_start_time = models.TimeField(default=django.utils.timezone.now)
     session_end_time = models.TimeField(default=django.utils.timezone.now)
 
     def __str__(self):
         return f"course: {self.lesson.name} -- teacher: {self.teacher.last_name} -- time: {self.session_start_time} to {self.session_end_time} in {self.session_1} and {self.session_2} "
+
+    def check_for_conflict(self, other):
+        if self.session_start_time == other.session_start_time:
+            return False
+        elif datetime.strptime(self.session_start_time, "%H:%M:%S") < datetime.strptime(other.session_start_time,
+                                                                                        "%H:%M:%S") < datetime.strptime(
+                self.session_end_time, "%H:%M:%S"):
+            return False
+        elif datetime.strptime(other.session_start_time, "%H:%M:%S") < datetime.strptime(self.session_start_time,
+                                                                                         "%H:%M:%S") < datetime.strptime(
+                other.session_end_time, "%H:%M:%S"):
+            return False
+        else:
+            return True
 
 
 class AllowedField(models.Model):

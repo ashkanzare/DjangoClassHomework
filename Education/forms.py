@@ -42,6 +42,9 @@ class RegisterUser(forms.ModelForm):
                 'unique': INVALID_PHONE,
             }
         }
+        widgets = {
+            'password': forms.PasswordInput
+        }
 
 
 class StudentCourseForm(forms.ModelForm):
