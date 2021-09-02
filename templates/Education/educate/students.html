@@ -6,7 +6,7 @@
         <div class="text-right"><h1>دانشجویان</h1></div>
             {% for std in object_list %}
                 <div class="card text-right">
-                    <a href="{% url 'Education:edit' std.id %}">
+                    <a href="{% url 'Education:edit' 'students' std.id %}">
                           <div class="card-body">
                               <div class="card-title">
                                 <h5 class="float-right">{{ std.first_name }} {{ std.last_name }}  | دانشکده {{ std.study_field.college.name }} تاریخ ثبت نام | {{ std.register_date|convert_date }} | {{ std.registration_confirmation|std_status }}</h5>

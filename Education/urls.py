@@ -1,8 +1,14 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path, reverse_lazy
-from .views import CourseListView, detail, register, register_course, edit, user_login, HomeView, EducateInfoView, StudentRequestsView, AllStudentsView, confirm_std
+
+from .views import (
+    CourseListView, detail, register, register_course,
+    edit, user_login, HomeView, EducateInfoView,
+    StudentRequestsView, AllStudentsView, CourseViewSet
+    )
 
 app_name = 'Education'
+
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
@@ -13,8 +19,8 @@ urlpatterns = [
     path('educate-info/', EducateInfoView.as_view(), name='info'),
     path('course-detail/<int:course_id>', detail, name='detail'),
     path('register/', register, name='register'),
-    path('edit/<int:std_id>', edit, name='edit'),
+    path('edit/<str:previous_path>/<int:std_id>', edit, name='edit'),
     path('register-course/', register_course, name='register_course'),
-    path('confirm-student/<int:std_id>', confirm_std, name='confirm_std'),
-    path('login/', user_login, name="login")
+    path('login/', user_login, name="login"),
+    path('courses-api/<str:text>', CourseViewSet.as_view(), name='courses-api')
 ]

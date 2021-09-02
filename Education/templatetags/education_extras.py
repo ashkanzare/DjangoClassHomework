@@ -48,3 +48,7 @@ def convert_date(date):
 def std_status(boolean):
     return 'تایید شده' if boolean else 'تایید نشده'
 
+
+@register.filter(name='time_format')
+def time_format(value):
+    return f'{value}'

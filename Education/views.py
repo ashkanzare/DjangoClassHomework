@@ -4,11 +4,15 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import generic
-from .models import Course, StudentCourse, Student
+from rest_framework import viewsets, generics
+
+from .models import Course, StudentCourse, Student, College, Lesson
 from .forms import RegisterStudent, StudentCourseForm, EditProfileStudent, UserLogin, RegisterUser
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group
 from django.contrib import messages
+
+from .serializers import CourseSerializer
 from .vars import *
 from django.contrib.auth.views import LogoutView
 
@@ -39,17 +43,26 @@ class HomeView(generic.TemplateView):
 
 
 class EducateInfoView(generic.TemplateView):
-    template_name = 'Education/info.html'
+    template_name = 'Education/educate/info.html'
 
 
 class StudentRequestsView(generic.ListView):
-    template_name = 'Education/stds_requests.html'
+    template_name = 'Education/educate/stds_requests.html'
     queryset = Student.objects.filter(registration_confirmation=False)
 
 
 class AllStudentsView(generic.ListView):
-    template_name = 'Education/students.html'
+    template_name = 'Education/educate/students.html'
     queryset = Student.objects.all()
+
+
+class CourseViewSet(generics.ListAPIView):
+    serializer_class = CourseSerializer
+
+    def get_queryset(self):
+        text = self.kwargs['text']
+        queryset = Course.objects.select_related('lesson').filter(lesson__name__contains=text)
+        return queryset
 
 
 def detail(request, course_id):
@@ -86,7 +99,7 @@ def register(request):
         'form': form,
         'user': user_form
     }
-    return render(request, 'Education/register.html', context=context)
+    return render(request, 'Education/auth/register.html', context=context)
 
 
 #
@@ -113,40 +126,28 @@ def register_course(request):
         'courses': courses,
         'std': std
     }
-    return render(request, 'Education/register-course.html', context=context)
+    return render(request, 'Education/student/register-course.html', context=context)
 
 
-@user_passes_test(check_user_is_boss)
-def edit(request, std_id):
+def edit(request, previous_path, std_id):
     std = get_object_or_404(Student, id=std_id)
     form = EditProfileStudent(instance=std)
     if request.method == 'POST':
-        form = EditProfileStudent(request.POST, request.FILES, instance=std)
-        if form.is_valid():
-            form.save()
-            return redirect('Education:all_students')
+        if check_user_is_boss(request.user) or previous_path == 'requests':
+            form = EditProfileStudent(request.POST, request.FILES, instance=std)
+
+            if form.is_valid():
+                form.save()
+                return redirect('Education:all_students')
+        else:
+            return HttpResponse('شما اجازه دسترسی به این بخش را ندارید')
 
     context = {
         'form': form,
-        'std_id': std.id
+        'std_id': std.id,
+        'previous_path': request.META.get('HTTP_REFERER').split('/')[-2],
     }
-    return render(request, 'Education/edit.html', context=context)
-
-
-def confirm_std(request, std_id):
-    std = get_object_or_404(Student, id=std_id)
-    form = EditProfileStudent(instance=std)
-    if request.method == 'POST':
-        form = EditProfileStudent(request.POST, request.FILES, instance=std)
-        if form.is_valid():
-            form.save()
-            return redirect('Education:std_requests')
-
-    context = {
-        'form': form,
-        'std_id': std.id
-    }
-    return render(request, 'Education/confirm.html', context=context)
+    return render(request, 'Education/educate/edit.html', context=context)
 
 
 def user_login(request):
@@ -165,4 +166,4 @@ def user_login(request):
     context = {
         'form': form,
     }
-    return render(request, 'Education/login.html', context=context)
+    return render(request, 'Education/auth/login.html', context=context)

@@ -7,7 +7,7 @@
         {% if object_list %}
             {% for request in object_list %}
                 <div class="card text-right">
-                    <a href="{% url 'Education:confirm_std' request.id %}">
+                    <a href="{% url 'Education:edit' 'requests' request.id  %}">
                           <div class="card-body">
                               <div class="card-title">
                                 <h5 class="float-right">{{ request.first_name }} {{ request.last_name }} -- تاریخ: {{ request.register_date|convert_date }} -- تایید نشده</h5>
