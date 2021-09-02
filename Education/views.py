@@ -1,12 +1,12 @@
 import django.contrib.auth
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.models import User
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import generic
 from rest_framework import viewsets, generics
 
-from .models import Course, StudentCourse, Student, College, Lesson
+from .models import Course, StudentCourse, Student, College, Lesson, User
 from .forms import RegisterStudent, StudentCourseForm, EditProfileStudent, UserLogin, RegisterUser
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group
@@ -84,7 +84,7 @@ def register(request):
             if created:
                 user.set_password(user_form.cleaned_data['password'])
                 user.save()
-                std_group = Group.objects.get(name='Students')
+                std_group = Group.objects.get(name='Student')
                 std_group.user_set.add(user)
                 new_std = form.save(commit=False)
                 new_std.user = user
@@ -155,10 +155,14 @@ def user_login(request):
     if request.method == 'POST':
         form = UserLogin(request.POST)
         if form.is_valid():
+
             user = authenticate(username=form.data['username'], password=form.data['password'])
             if user:
-                login(request, user)
-                return redirect('Education:home')
+                if user.user_type == form.data['user_type']:
+                    login(request, user)
+                    return redirect('Education:home')
+                messages.error(request, INVALID_LEVEL)
+                return redirect('Education:login')
             messages.error(request, INVALID_USERNAME_PASSWORD)
             return redirect('Education:login')
         messages.error(request, form.errors.as_text())

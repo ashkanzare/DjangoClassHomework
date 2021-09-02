@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import College, Student, Teacher, Course, Lesson, StudentCourse, Staff, StudyField, AllowedField
+from .models import College, Student, Teacher, Course, Lesson, StudentCourse, Staff, StudyField, AllowedField, User
 
 # Register your models here.
 
@@ -10,7 +10,7 @@ admin.site.register(Teacher)
 admin.site.register(StudentCourse)
 admin.site.register(StudyField)
 admin.site.register(AllowedField)
-
+admin.site.register(User)
 
 class CourseInline(admin.StackedInline):
     model = Course

@@ -1,10 +1,24 @@
 import django.utils.timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 from .vars import *
 
 
 # Create your models here.
+
+class User(AbstractUser):
+    phone_regex = RegexValidator(regex=r'^9\d{9}$',
+                                 message="شماره تماس باید با فرمت ۹۱۲۷۸۹۳۴۵۶ وارد شود")
+    phone = models.CharField(validators=[phone_regex], max_length=10, unique=True)
+    image = models.ImageField(upload_to='user_image', blank=True, null=True)
+
+    user_type = models.CharField(max_length=500, choices=USER_TYPE_CHOICES, default=None, null=True)
+
+    EMAIL_FIELD = 'phone'
+    REQUIRED_FIELDS = ['phone']
+
+
 class College(models.Model):
     name = models.CharField(max_length=200)
     address = models.TextField()
@@ -29,8 +43,6 @@ class Person(models.Model):
     address = models.TextField(verbose_name=ADDRESS)
     personal_id = models.CharField(max_length=200, unique=True, blank=True, null=True, verbose_name=PERSONAL_ID)
     email = models.EmailField(verbose_name=EMAIL)
-    phone = models.CharField(blank=True, null=True, max_length=200, verbose_name=PHONE)
-    image = models.ImageField(upload_to='users_images', blank=True, null=True, verbose_name=PHOTO)
     entry_date = models.DateField(null=True, blank=True, default=django.utils.timezone.now, verbose_name=ENTRY_DATE)
     register_date = models.DateField(null=True, blank=True, default=django.utils.timezone.now,
                                      verbose_name=REGISTER_DATE)

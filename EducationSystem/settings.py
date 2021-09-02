@@ -153,3 +153,6 @@ except Exception as e:
 
 # redirect to this view after login
 LOGIN_REDIRECT_URL = 'Education:home'
+
+# change user reference model
+AUTH_USER_MODEL = 'Education.User'
