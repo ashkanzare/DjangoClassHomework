@@ -45,6 +45,9 @@
                 <div class="p-3">
                     <a href="{% url 'library:rent_book' %}">امانت کتاب</a>
                 </div>
+                <div class="p-3">
+                    <a href="{% url 'Education:student_courses' %}">کلاس های من</a>
+                </div>
             {% endif %}
         {% else %}
             <div class="p-3">
@@ -78,5 +81,8 @@
     {% endblock %}
 
 </div>
+{% block js %}
+
+{% endblock %}
 </body>
 </html>

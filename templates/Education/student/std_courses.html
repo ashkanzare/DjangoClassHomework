@@ -1,0 +1,41 @@
+{% extends 'Education/base.html' %}
+{% block title %}کلاس های من{% endblock %}
+{% block content %}
+<div class="container mt-5">
+        <div class="text-right"><h1>کلاس های من</h1></div>
+        <div class="card-body border">
+                            <div class="card-body col-12">
+                                <div class="row">
+                                    <p class="card-text text-right col-2">  نام درس </p>
+                                    <p class="card-text text-right col-2">استاد</p>
+                                    <p class="card-text text-right col-2">واحد</p>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <p class="card-text col-6 text-right">روز های هفته </p>
+                                            <p class="card-text col-3 text-right">ساعت شروع</p>
+                                            <p class="card-text col-3 text-right">ساعت پایان</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        {% for course in object_list %}
+            <div class="card-body border">
+            <div class="row">
+                <p class="card-text text-right col-2">{{course.lesson.name}}</p>
+                <p class="card-text text-right col-2">{{course.teacher.last_name}}</p>
+                <p class="card-text text-right col-2">{{course.lesson.unit}}</p>
+                <div class="col-6">
+                    <div class="row">
+                        <p class="card-text col-6 text-right">{{course.session_1}} تا {{ course.session_2 }} </p>
+                        <p class="card-text col-3 text-right"
+                           style="direction: ltr!important; font-size: 70%">{{course.session_start_time}}</p>
+                        <p class="card-text col-3 text-right"
+                           style="direction: ltr!important; font-size: 70%">{{course.session_end_time}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+</div>
+{% endblock %}

@@ -30,7 +30,7 @@ class College(models.Model):
 
 
 class StudyField(models.Model):
-    college = models.ForeignKey(College, on_delete=models.CASCADE)
+    college = models.ForeignKey(College, on_delete=models.CASCADE, related_name='study_fields')
     name = models.CharField(max_length=300, verbose_name=STUDY_FIELD)
 
     def __str__(self):
@@ -70,8 +70,9 @@ class Staff(Person):
 
 
 class Student(Person):
-    study_field = models.OneToOneField(StudyField, on_delete=models.CASCADE, null=True, blank=True,
-                                       verbose_name=STUDY_FIELD)
+    college = models.ForeignKey(College, on_delete=models.CASCADE, related_name='students', null=True)
+    study_field = models.ForeignKey(StudyField, on_delete=models.CASCADE, null=True, blank=True,
+                                    verbose_name=STUDY_FIELD, related_name='students')
     registration_confirmation = models.BooleanField(default=False, verbose_name=REGISTER_CONFIRM)
     max_units = models.PositiveIntegerField(default=24, verbose_name=MAX_UNITS)
 
@@ -123,18 +124,16 @@ class Course(models.Model):
         return f"course: {self.lesson.name} -- teacher: {self.teacher.last_name} -- time: {self.session_start_time} to {self.session_end_time} in {self.session_1} and {self.session_2} "
 
     def check_for_conflict(self, other):
-        if self.session_start_time == other.session_start_time:
-            return False
-        elif datetime.strptime(self.session_start_time, "%H:%M:%S") < datetime.strptime(other.session_start_time,
-                                                                                        "%H:%M:%S") < datetime.strptime(
-                self.session_end_time, "%H:%M:%S"):
-            return False
-        elif datetime.strptime(other.session_start_time, "%H:%M:%S") < datetime.strptime(self.session_start_time,
-                                                                                         "%H:%M:%S") < datetime.strptime(
-                other.session_end_time, "%H:%M:%S"):
-            return False
-        else:
-            return True
+        if self.session_1 == other.session_1 or self.session_1 == other.session_2 or self.session_2 == other.session_1 or self.session_2 == other.session_2:
+            if self.session_start_time == other.session_start_time:
+                return False
+            elif self.session_start_time < other.session_start_time < self.session_end_time:
+                return False
+            elif other.session_start_time < self.session_start_time < other.session_end_time:
+                return False
+            else:
+                return True
+        return True
 
 
 class AllowedField(models.Model):

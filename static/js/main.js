@@ -9,6 +9,8 @@ function select(id, bool) {
     } else {
         let course = $('#' + id).remove()
         course.attr('onclick', `select(${id}, true)`)
+        $('#choice > div').css('background-color', 'white')
+        course.css('background-color', 'white')
         $('#suggest').append(course)
     }
 }
@@ -54,11 +56,14 @@ function select_from_results(course) {
 
 
 // get results of courses query from api
+
 function get_courses_results(url) {
+
     let text = $("#field_name").val()
     let result_field = $('#fields_results')
     if (text !== '') {
-        $.get(url.slice(0, 23) + text, function (data, status) {
+        console.log(url.slice(0, 27) + text)
+        $.get(url.slice(0, 27) + text, function (data, status) {
             if (data.length === 0) {
                 console.log(data.length)
                 result_field.html('')
@@ -156,8 +161,7 @@ function select_book_from_results(book) {
         }
         if (document.getElementById('book_results_div').children.length > 6) {
             alert('شما بیشتر از 5 کتاب نمیتوانید انتخاب کنید')
-        }
-        else {
+        } else {
             let book_div = $(`<div id="${book.id}" class="card w-100 course-select"/>`)
             book_div.html(make_select_book_html(book))
             book_div.data('key', book)
@@ -176,7 +180,7 @@ function get_books_results(url) {
     let text = $("#book_name").val()
     let books_results = $('#books_results')
     if (text !== '') {
-        $.get(url.slice(0, 19) + text, function (data, status) {
+        $.get(url.slice(0, 23) + text, function (data, status) {
 
             if (data.length === 0) {
                 books_results.html('')
@@ -231,12 +235,70 @@ function get_books_results(url) {
 function show_final_books(url, token, next_url) {
     let parentDiv = []
     $("#book_results_div > div").each((index, elem) => {
-      parentDiv.push(elem.id);
+        parentDiv.push(elem.id);
     });
     let allowed_ids = parentDiv.slice(1,)
 
     $.post(url, {'results': allowed_ids, 'csrfmiddlewaretoken': token}, function (data, status) {
         location.replace(next_url);
     })
+
+}
+
+// register student courses
+function register_courses(url_check, url_submit, token, std_id, next_url) {
+    let choice_field = document.getElementById('choice').children
+    const courses_id = Object.keys(choice_field).slice(2,).reduce((result, key) => {
+        result[key] = choice_field[key].id;
+        return result;
+    }, {});
+
+    // check for courses conflicts
+    let check_conflicts;
+    $.ajax({
+        url: url_check,
+        type: "POST",
+        data: Object.assign({}, courses_id, {csrfmiddlewaretoken: token}),
+        dataType: 'json',
+        success: function (data) {
+            check_conflicts = data[0]
+            if (check_conflicts['status'] !== 'ok') {
+                // there is conflict
+                for (let id in check_conflicts['courses']) {
+                    let id_num = check_conflicts['courses'][id];
+                    $(`#${id_num}`).css('background-color', 'red');
+                }
+                let message = `دروس قرمز شده باهم تداخل دارند... لطفا بررسی کنید`
+                alert(message)
+            } else {
+                // there is no conflict
+                // submit courses
+                for (let i in courses_id) {
+                    let data = {
+                        "score": null,
+                        "course": Number(courses_id[i]),
+                        "student": std_id,
+                        csrfmiddlewaretoken: token
+                    }
+                    $.ajax({
+                        url: url_submit,
+                        type: "POST",
+                        data: data,
+                        dataType: 'json',
+                        error: function (xhr, status, error) {
+                            let message = 'در ثبت دروس مشکلی پیش آمده دوباره سعی کنید'
+                            alert(message)
+                        },
+                        success: function (data) {
+                            location.replace(next_url);
+                        }
+                    });
+
+
+                }
+            }
+        }
+    });
+
 
 }

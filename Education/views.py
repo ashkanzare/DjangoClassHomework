@@ -11,8 +11,6 @@ from .forms import RegisterStudent, StudentCourseForm, EditProfileStudent, UserL
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group
 from django.contrib import messages
-
-from .serializers import CourseSerializer
 from .vars import *
 from django.contrib.auth.views import LogoutView
 
@@ -38,6 +36,14 @@ class CourseListView(generic.ListView):
     queryset = Course.objects.all()
 
 
+class StudentCourseListView(generic.ListView):
+    template_name = 'Education/student/std_courses.html'
+
+    def get_queryset(self):
+        queryset = Course.objects.filter(studentcourse__student__user_id=self.request.user.id)
+        return queryset
+
+
 class HomeView(generic.TemplateView):
     template_name = 'Education/home.html'
 
@@ -54,15 +60,6 @@ class StudentRequestsView(generic.ListView):
 class AllStudentsView(generic.ListView):
     template_name = 'Education/educate/students.html'
     queryset = Student.objects.all()
-
-
-class CourseViewSet(generics.ListAPIView):
-    serializer_class = CourseSerializer
-
-    def get_queryset(self):
-        text = self.kwargs['text']
-        queryset = Course.objects.select_related('lesson').filter(lesson__name__contains=text)
-        return queryset
 
 
 def detail(request, course_id):
@@ -120,13 +117,14 @@ def register(request):
 
 
 def register_course(request):
-    std = Student.objects.get(user=request.user)
-    courses = Course.objects.filter(college=std.study_field.college)
-    context = {
-        'courses': courses,
-        'std': std
-    }
-    return render(request, 'Education/student/register-course.html', context=context)
+    if request.method == 'GET':
+        std = Student.objects.get(user=request.user)
+        courses = Course.objects.filter(college=std.study_field.college)
+        context = {
+            'courses': courses,
+            'std': std
+        }
+        return render(request, 'Education/student/register-course.html', context=context)
 
 
 def edit(request, previous_path, std_id):

@@ -35,12 +35,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Education.apps.EducationConfig',
-    'library.apps.LibraryConfig',
-    'crispy_forms',
+    # rest framework
     'rest_framework',
 
+    # Education applications
+    'Education.apps.EducationConfig',
+    'library.apps.LibraryConfig',
+
+    # bootstrap forms
+    'crispy_forms',
+
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning'
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -67,9 +76,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'libraries':  {
-                            'education_extras': 'Education.templatetags.education_extras',
-                        }
+            'libraries': {
+                'education_extras': 'Education.templatetags.education_extras',
+            }
         },
     },
 ]
@@ -142,6 +151,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # error handlers
 try:
     from django.contrib.messages import constants as messages
+
     MESSAGE_TAGS = {
         messages.DEBUG: 'alert-info',
         messages.INFO: 'alert-info',

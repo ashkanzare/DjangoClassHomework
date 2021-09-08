@@ -11,15 +11,15 @@ admin.site.register(StudentCourse)
 admin.site.register(StudyField)
 admin.site.register(AllowedField)
 admin.site.register(User)
+admin.site.register(Lesson)
+# class CourseInline(admin.StackedInline):
+#     model = Course
+#     max_num = 3
 
-class CourseInline(admin.StackedInline):
-    model = Course
-    max_num = 3
-
-
-@admin.register(Lesson)
-class LessonAdmin(admin.ModelAdmin):
-    inlines = [CourseInline, ]
+#
+# @admin.register(Lesson)
+# class LessonAdmin(admin.ModelAdmin):
+#     inlines = [CourseInline, ]
 
 
 def change_status(modeladmin, request, queryset):

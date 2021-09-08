@@ -16,8 +16,9 @@ class Book(models.Model):
 
 
 class Rent(models.Model):
-    student = models.OneToOneField(Student, on_delete=models.RESTRICT)
-    book = models.OneToOneField(Book, on_delete=models.RESTRICT)
+    student = models.ForeignKey(Student, on_delete=models.RESTRICT)
+    book = models.ForeignKey(Book, on_delete=models.RESTRICT)
+    active = models.BooleanField(default=True)
     date = models.DateField(default=django.utils.timezone.now)
 
     def __str__(self):
