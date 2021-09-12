@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import viewsets
 
 from ..models import Course, Student, Teacher, StudentCourse, StudyField, College
 from .serializers import CourseSerializer, StudentsSerializer, TeacherSerializer, \
@@ -95,3 +96,15 @@ class CheckCourseView(APIView):
                                               'course_1': course_1.id,
                                               'course_2': course_2.id}}])
         return Response([{'status': 'ok'}])
+
+
+class SelectCourseViewSet(viewsets.ModelViewSet):
+    queryset = None
+    serializer_class = SelectCourseSerializer
+
+    def get_queryset(self):
+        return StudentCourse.objects.filter(student__user_id=self.request.user.id)
+
+    def perform_create(self, serializer):
+        serializer.save(student__user=self.request.user)
+

@@ -1,10 +1,15 @@
-from django.urls import path
+from django.urls import path, include
 from Education.api.views import CourseViewSet, StudentsViewSet, TeacherViewSet, StudyDetailViewSet, \
-    StudyFieldStudentViewSet, SelectCourseView, CheckCourseView, CollegeStudentViewSet
+    StudyFieldStudentViewSet, SelectCourseView, CheckCourseView, CollegeStudentViewSet, SelectCourseViewSet
+from rest_framework import routers
 
 app_name = 'education_api'
 
+router = routers.DefaultRouter()
+router.register('', SelectCourseViewSet, basename='StudentCourse')
+
 urlpatterns = [
+    path('', include(router.urls)),
     path('courses-api/<str:text>', CourseViewSet.as_view(), name='courses-api'),
     path('students/', StudentsViewSet.as_view(), name='students-api'),
     path('teachers/', TeacherViewSet.as_view(), name='teachers-api'),

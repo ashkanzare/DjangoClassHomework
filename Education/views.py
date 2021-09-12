@@ -13,7 +13,10 @@ from django.contrib.auth.models import Group
 from django.contrib import messages
 from .vars import *
 from django.contrib.auth.views import LogoutView
+import logging
 
+
+logger = logging.getLogger('django')
 
 # user test functions
 def check_user_registered(user):
@@ -162,6 +165,7 @@ def user_login(request):
                 messages.error(request, INVALID_LEVEL)
                 return redirect('Education:login')
             messages.error(request, INVALID_USERNAME_PASSWORD)
+            logger.info('username or password was incorrect.')
             return redirect('Education:login')
         messages.error(request, form.errors.as_text())
         return redirect('Education:login')

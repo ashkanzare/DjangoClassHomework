@@ -70,7 +70,9 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class SelectCourseSerializer(serializers.ModelSerializer):
+    student = serializers.ReadOnlyField(source='student.username')
+
     class Meta:
         model = StudentCourse
-        fields = '__all__'
+        exclude = ['score']
 
