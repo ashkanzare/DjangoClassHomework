@@ -1,22 +1,19 @@
-import django.contrib.auth
 from django.contrib.auth.decorators import user_passes_test
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import generic
-from rest_framework import viewsets, generics
 
-from .models import Course, StudentCourse, Student, College, Lesson, User
-from .forms import RegisterStudent, StudentCourseForm, EditProfileStudent, UserLogin, RegisterUser
+from .models import Course, StudentCourse, Student, User
+from .forms import RegisterStudent, EditProfileStudent, UserLogin, RegisterUser
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from .vars import *
-from django.contrib.auth.views import LogoutView
 import logging
 
-
 logger = logging.getLogger('django')
+
 
 # user test functions
 def check_user_registered(user):
@@ -80,7 +77,8 @@ def register(request):
         user_form = RegisterUser(request.POST)
         form = RegisterStudent(request.POST, request.FILES)
         if form.is_valid() and user_form.is_valid():
-            user, created = User.objects.get_or_create(username=user_form.cleaned_data['username'])
+            user, created = User.objects.get_or_create(username=user_form.cleaned_data['username'],
+                                                       phone=user_form.cleaned_data['phone'])
             if created:
                 user.set_password(user_form.cleaned_data['password'])
                 user.save()

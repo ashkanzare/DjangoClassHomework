@@ -2,8 +2,6 @@ import django.utils.timezone
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
-from django.utils.datetime_safe import datetime
-
 from .vars import *
 
 
