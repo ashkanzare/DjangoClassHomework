@@ -90,8 +90,12 @@ WSGI_APPLICATION = 'EducationSystem.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'education_db',
+        'USER': 'postgres',
+        'HOST': "0.0.0.0",
+        'PORT': 5432,
+        'PASSWORD': '123456'
     }
 }
 
@@ -194,4 +198,16 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+# cache configure
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "example"
+    }
 }

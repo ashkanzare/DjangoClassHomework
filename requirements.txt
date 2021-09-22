@@ -1,0 +1,9 @@
+Django
+django-crispy-forms
+django-filter
+django-redis
+djangorestframework
+jdatetime
+Markdown
+Pillow
+psycopg2

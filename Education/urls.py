@@ -1,6 +1,11 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path, reverse_lazy
 
+from django.views.decorators.cache import cache_page
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+
+from EducationSystem import settings
+
 from .views import (
     CourseListView, detail, register, register_course,
     edit, user_login, HomeView, EducateInfoView,
@@ -8,10 +13,10 @@ from .views import (
     )
 
 app_name = 'Education'
-
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
+    path('', cache_page(CACHE_TTL)(HomeView.as_view()), name='home'),
     path('courses/', CourseListView.as_view(), name='courses'),
     path('logout/', LogoutView.as_view(next_page=reverse_lazy('Education:login')), name='logout'),
     path('requests/', StudentRequestsView.as_view(), name='std_requests'),

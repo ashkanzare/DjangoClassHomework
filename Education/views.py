@@ -3,7 +3,10 @@ from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import generic
+from django.views.decorators.cache import cache_page
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
+from EducationSystem import settings
 from .models import Course, StudentCourse, Student, User
 from .forms import RegisterStudent, EditProfileStudent, UserLogin, RegisterUser
 from django.contrib.auth import authenticate, login
@@ -11,6 +14,7 @@ from django.contrib.auth.models import Group
 from django.contrib import messages
 from .vars import *
 import logging
+
 
 logger = logging.getLogger('django')
 
@@ -42,6 +46,7 @@ class StudentCourseListView(generic.ListView):
     def get_queryset(self):
         queryset = Course.objects.filter(studentcourse__student__user_id=self.request.user.id)
         return queryset
+
 
 
 class HomeView(generic.TemplateView):
